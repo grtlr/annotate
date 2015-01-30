@@ -3,7 +3,7 @@ annotate
 
 Fast annotation of images using superpixels. The image is over segmented into superpixels using the *SEEDS* algorithm.
 
-The project is under heavy development.
+The project is under development and expected to change frequently.
 
 Requirements
 ------------
@@ -15,11 +15,12 @@ Requirements
 Usage
 -----
 
-* ``<Space>`` Toggles contours of the superpixels on/off
+* ``<LeftMouse>`` labels the superpixel under the cursor
+* ``<RightMouse>`` labels as background
+* ``<Space>`` toggles contours of the superpixels on/off
 
 TODO
 ----
 
-* right-click should label background
 * dynamically load labels from file
 * file management in general
