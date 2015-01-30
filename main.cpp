@@ -1,4 +1,3 @@
-#include <QDialog>
 #include <QApplication>
 #include <QFileInfo>
 #include <QFileDialog>
@@ -68,17 +67,17 @@ int main(int argc, char **argv)
     p.setIds(ls);
     p.setContours(cs);
 
-    ImageWidget w; 
+    ImageWidget w;
     w.setPartitioning(&p);
     w.setImage(bgrToQImage(image));
     w.setContours(p.getContours());
     window.setCentralWidget(&w);
 
     QObject::connect(&window, SIGNAL(currentLabelChanged(const Label &)),
-                     &w,      SLOT(setCurrentLabel(const Label &))); 
+                     &w,      SLOT(setCurrentLabel(const Label &)));
 
     ImageLabel l(image.rows, image.cols);
-    
+
     QObject::connect(&w, SIGNAL(changeLabel(const cv::Mat &, const Label &)),
                      &l, SLOT(labelArea(const cv::Mat &, const Label &)));
 
