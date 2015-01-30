@@ -34,6 +34,12 @@ class AnnotationWindow : public QMainWindow
 
             QObject::connect(_save_button, SIGNAL(clicked()),
                              this,         SLOT(buttonClicked()));
+
+            // This keeps this combobox from gaining focus. Otherwise
+            // it would interfere with the other keyboard shortcuts. 
+            _combobox->setFocusPolicy(Qt::NoFocus);
+            _save_button->setFocusPolicy(Qt::NoFocus);
+
         }
 
         void setLabels(std::set<Label> & labels)

@@ -68,6 +68,7 @@ int main(int argc, char **argv)
     p.setContours(cs);
 
     ImageWidget w;
+    w.setFocus(Qt::OtherFocusReason);
     w.setPartitioning(&p);
     w.setImage(bgrToQImage(image));
     w.setContours(p.getContours());

@@ -12,10 +12,14 @@ Requirements
 * Qt5 (Qt4 should work with modified ``CMakeLists.txt``)
 * OpenCV 3.0.0 **with contrib packages**
 
+Usage
+-----
+
+* ``<Space>`` Toggles contours of the superpixels on/off
+
 TODO
 ----
 
-* Hotkey to display/hide contours of superpixels
 * right-click should label background
 * dynamically load labels from file
 * file management in general

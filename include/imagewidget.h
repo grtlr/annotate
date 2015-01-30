@@ -21,6 +21,7 @@ class ImageWidget : public QLabel
         explicit ImageWidget(QWidget *parent = 0) : QLabel(parent)
         {
             this->setMouseTracking(true);
+            this->setFocusPolicy(Qt::StrongFocus);
         }
 
         QSize sizeHint() const { return _image.size(); }
@@ -71,10 +72,24 @@ class ImageWidget : public QLabel
 
     protected:
 
+        void keyPressEvent(QKeyEvent * event)
+        {
+            if (event->key() == Qt::Key_Space)
+            {
+                _contours_visible = !_contours_visible;
+                repaint();
+            }
+        }
+
         void mousePressEvent(QMouseEvent * event)
         {
             cv::Mat mask = _partitioning->getPartition(event->x(), event->y());
-            this->changeLabel(mask, _current_label);
+
+            if (event->buttons() == Qt::LeftButton)
+                this->changeLabel(mask, _current_label);
+            else if (event->buttons() == Qt::RightButton)
+                this->changeLabel(mask, _background_label);
+
             repaint();
         }
 
@@ -87,10 +102,12 @@ class ImageWidget : public QLabel
 
             cv::Mat mask = _partitioning->getPartition(x, y);
             this->setActive(mask);
-            if (event->buttons() == 1)
-            {
+
+            if (event->buttons() == Qt::LeftButton)
                 this->changeLabel(mask, _current_label);
-            }
+            else if (event->buttons() == Qt::RightButton)
+                this->changeLabel(mask, _background_label);
+
             repaint();
         }
 
@@ -100,7 +117,10 @@ class ImageWidget : public QLabel
             painter.setCompositionMode(QPainter::CompositionMode_Source);
             painter.drawImage(QPoint(0,0), _image);
             painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-            painter.drawImage(QPoint(0,0), _contours);
+
+            if (_contours_visible)
+                painter.drawImage(QPoint(0,0), _contours);
+
             painter.setOpacity(0.5);
             painter.drawImage(QPoint(0,0), _labels);
             painter.drawImage(QPoint(0,0), _active);
@@ -130,7 +150,10 @@ class ImageWidget : public QLabel
         QImage _labels;
 
         Label          _current_label;
+        Label          _background_label = Label{"Background", 0, 0, 0};
         Partitioning * _partitioning;
+
+        bool _contours_visible = true;
 
         const QColor _active_color  = QColor(255,255,255,150);
         const QColor _contour_color = QColor(255,255,255,150);
