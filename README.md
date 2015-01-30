@@ -1,5 +1,6 @@
 annotate
 ========
+[![Build Status](https://travis-ci.org/grtlr/annotate.svg?branch=master)](https://travis-ci.org/grtlr/annotate)
 
 Fast annotation of images using superpixels. The image is over segmented into superpixels using the *SEEDS* algorithm.
 
