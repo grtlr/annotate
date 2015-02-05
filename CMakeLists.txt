@@ -21,6 +21,7 @@ qt5_wrap_cpp(
     include/imagewidget.h
     include/image_label.h
     include/partitioning.h
+    include/loadfiles.h
 )
 
 add_executable(

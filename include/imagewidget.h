@@ -8,10 +8,13 @@
 #include <QMouseEvent>
 
 #include <opencv2/core/core.hpp>
+#include <opencv2/ximgproc.hpp>
+#include <opencv2/imgproc.hpp>
 
 #include "convert.h"
 #include "label.h"
 #include "partitioning.h"
+#include "image_label.h"
 
 class ImageWidget : public QLabel
 {
@@ -22,6 +25,7 @@ class ImageWidget : public QLabel
         {
             this->setMouseTracking(true);
             this->setFocusPolicy(Qt::StrongFocus);
+            _ilabels = 0;
         }
 
         QSize sizeHint() const { return _image.size(); }
@@ -29,11 +33,57 @@ class ImageWidget : public QLabel
 
     public slots:
 
-        void setImage(const QImage & image)
+        void setImage(const cv::Mat & image)
         {
-            _image = image;
+            using namespace cv;
+            using namespace cv::ximgproc;
+
+            _image = bgrToQImage(image);
             this->setFixedSize(_image.size());
+            this->setFocus(Qt::OtherFocusReason);
+
+            Ptr<SuperpixelSEEDS> seeds;
+            int num_superpixels = 400;
+            int num_levels = 4;
+            int prior = 2;
+            int num_histogram_bins = 5;
+            int num_iterations = 4;
+
+            seeds = createSuperpixelSEEDS(image.size().width, image.size().height,
+                    image.channels(), num_superpixels,
+                    num_levels, prior, num_histogram_bins, false);
+
+            Mat img_conv;
+            cvtColor(image, img_conv, COLOR_BGR2HSV);
+            seeds->iterate(img_conv, num_iterations);
+
+            Mat ls, cs;
+            seeds->getLabels(ls);
+            seeds->getLabelContourMask(cs);
+
+            _partitioning.setIds(ls);
+            _partitioning.setContours(cs);
+            _contours = contoursToQImage(_partitioning.getContours(), _contour_color);
+
+            if (_ilabels != 0)
+                delete _ilabels;
+
+            _ilabels = new ImageLabel(_image.height(), _image.width());
+
+
+            QObject::connect(this, SIGNAL(changeLabel(const cv::Mat &, const Label &)),
+					_ilabels, SLOT(labelArea(const cv::Mat &, const Label &)));
+
+            QObject::connect(_ilabels, SIGNAL(labelChanged(const cv::Mat &)),
+                    this, SLOT(setLabels(const cv::Mat &)));
+
+            _ilabels->update();
             repaint();
+        }
+
+        void writeToFile(const std::string & f)
+        {
+            _ilabels->writeToFile(f);
         }
 
         void setContours(const cv::Mat & contours)
@@ -60,11 +110,6 @@ class ImageWidget : public QLabel
             _current_label = l;
         }
 
-        void setPartitioning(Partitioning * p)
-        {
-            _partitioning = p;
-        }
-
     signals:
 
         void mousePositionChanged(int x, int y);
@@ -83,7 +128,7 @@ class ImageWidget : public QLabel
 
         void mousePressEvent(QMouseEvent * event)
         {
-            cv::Mat mask = _partitioning->getPartition(event->x(), event->y());
+            cv::Mat mask = _partitioning.getPartition(event->x(), event->y());
 
             if (event->buttons() == Qt::LeftButton)
                 this->changeLabel(mask, _current_label);
@@ -100,7 +145,7 @@ class ImageWidget : public QLabel
             if ( x < 0 || x >= _image.width() || y < 0 || y >= _image.height() )
                 return;
 
-            cv::Mat mask = _partitioning->getPartition(x, y);
+            cv::Mat mask = _partitioning.getPartition(x, y);
             this->setActive(mask);
 
             if (event->buttons() == Qt::LeftButton)
@@ -149,9 +194,10 @@ class ImageWidget : public QLabel
         QImage _active;
         QImage _labels;
 
-        Label          _current_label;
-        Label          _background_label = Label{"Background", 0, 0, 0};
-        Partitioning * _partitioning;
+        Label        _current_label;
+        Label        _background_label = Label{"Background", 0, 0, 0};
+        Partitioning _partitioning;
+        ImageLabel * _ilabels;
 
         bool _contours_visible = true;
 

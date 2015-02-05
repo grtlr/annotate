@@ -13,12 +13,24 @@ class ImageLabel : public QObject
     Q_OBJECT
 
     public:
+        ImageLabel() {}
         explicit ImageLabel(size_t rows, size_t cols)
         {
             _labels = cv::Mat(rows, cols, CV_8UC3, cv::Scalar::all(0));
         }
 
         cv::Mat getLabeledImage() const { return _labels; }
+
+        void update()
+        {
+            labelChanged(_labels);
+        }
+
+        void clear()
+        {
+            _labels = cv::Mat(_labels.rows, _labels.cols, CV_8UC3, cv::Scalar::all(0));
+        }
+
 
     public slots:
 

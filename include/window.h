@@ -6,9 +6,13 @@
 #include <QToolBar>
 #include <QPushButton>
 
+#include <opencv2/core/core.hpp>
+
 #include <set>
 
 #include "label.h"
+#include "loadfiles.h"
+#include "imagewidget.h"
 
 class QString;
 
@@ -17,8 +21,19 @@ class AnnotationWindow : public QMainWindow
     Q_OBJECT
 
     public:
-        explicit AnnotationWindow(QWidget *parent = 0)
+        explicit AnnotationWindow(QWidget *parent, QString file, QString target)
+            : _current(file), _target(target)
         {
+            _image_widget = new ImageWidget();
+            this->setCentralWidget(_image_widget);
+
+            QObject::connect(this, SIGNAL(currentLabelChanged(const Label &)),
+                    _image_widget, SLOT(setCurrentLabel(const Label &)));
+
+            QObject::connect(this, SIGNAL(saveButtonClicked(const std::string &)),
+                    _image_widget, SLOT(writeToFile(const std::string &)));
+
+            this->setWindowTitle("annotate - " + file);
             QToolBar * bar = new QToolBar();
             this->addToolBar(bar);
 
@@ -36,10 +51,10 @@ class AnnotationWindow : public QMainWindow
                              this,         SLOT(buttonClicked()));
 
             // This keeps this combobox from gaining focus. Otherwise
-            // it would interfere with the other keyboard shortcuts. 
+            // it would interfere with the other keyboard shortcuts.
             _combobox->setFocusPolicy(Qt::NoFocus);
             _save_button->setFocusPolicy(Qt::NoFocus);
-
+           
         }
 
         void setLabels(std::set<Label> & labels)
@@ -52,10 +67,21 @@ class AnnotationWindow : public QMainWindow
             }
         }
 
+    public slots:
+
+        void setImage(const cv::Mat & img, const QString & file, const QString & target)
+        {
+            this->setWindowTitle("annotate - " + file);
+            _current = file;
+            _target = target;
+            _image_widget->setImage(img);
+        }
+
     signals:
 
         void currentLabelChanged(const Label & l);
         void saveButtonClicked(const std::string & s);
+        void nextImageClicked();
 
     private slots:
 
@@ -66,12 +92,18 @@ class AnnotationWindow : public QMainWindow
 
         void buttonClicked()
         {
-            saveButtonClicked("test.png");
+            saveButtonClicked(_target.toStdString());
+            nextImageClicked();    
         }
 
     private:
+
+        QString _current;
+        QString _target;
+
         QComboBox   * _combobox;
         QPushButton * _save_button;
+        ImageWidget * _image_widget;
 };
 
 #endif // WINDOW_H
