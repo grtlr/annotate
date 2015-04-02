@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QFileInfo>
 #include <QFileDialog>
+#include <QCommandLineParser>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui.hpp>
@@ -25,18 +26,23 @@ int main(int argc, char **argv)
     QApplication app(argc, argv);
 
     Files * fs;
-    if (argc == 2)
-    {
-        fs = new Files(0,argv[1]);
-    } else {
-        QFileDialog dlg( NULL, "Select Folder");
-        dlg.setFileMode( QFileDialog::Directory );
-        if (dlg.exec())
-                fs = new Files(0,dlg.selectedFiles().at(0).toStdString());
-        else
-            return 0;
+
+    QCommandLineParser parser;
+    parser.setApplicationDescription("Annotation of images using SEEDS superpixels.");
+    parser.addHelpOption();
+    parser.addPositionalArgument("labels", "File containing the labels.");
+    parser.addPositionalArgument("indir", "Folder containing the images.");
+    parser.addPositionalArgument("outdir", "Destination directory.");
+    parser.process(app);
+    
+    const QStringList positionalArguments = parser.positionalArguments();
+    if (positionalArguments.size() < 3) {
+        parser.showHelp();
     }
 
+    fs = new Files(0, positionalArguments.at(1), positionalArguments.at(2));
+
+    // TODO Folder exists
     fs->mkLabelDir();
     
     AnnotationWindow window(0, fs->getImages().at(0), "World");
@@ -49,7 +55,7 @@ int main(int argc, char **argv)
 
     fs->nextFile();
     // read labels
-    std::set<Label> labels = readLabelsFromFile("labels.txt");
+    std::set<Label> labels = readLabelsFromFile(positionalArguments.at(0).toStdString());
     window.setLabels(labels);
 
     window.show();

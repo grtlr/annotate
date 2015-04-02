@@ -1,3 +1,0 @@
-Blood 0 128 255
-Organ 0 255 128
-Instrument 0 255 255

@@ -16,9 +16,10 @@ class Files : public QObject
     public:
         Files (QObject *parent=0) : QObject(parent) {}
 
-        Files (QObject *parent, const std::string & folder) : QObject(parent)
+        Files (QObject *parent, const QString & folder, const QString & target) : QObject(parent)
         {
-            _wfolder = QDir(QString::fromStdString(folder));
+            _wfolder = QDir(folder);
+            _lfolder = QDir(target);
             QStringList filters;
             filters << "*.png" << "*.bmp";
             _wfolder.setNameFilters(filters);
@@ -31,7 +32,7 @@ class Files : public QObject
 
         void mkLabelDir()
         {
-            _wfolder.mkdir(_lfolder);
+            _wfolder.mkdir(_lfolder.absolutePath());
         }
 
         QStringList getImages() const
@@ -63,7 +64,7 @@ class Files : public QObject
         {
             QFileInfo fi(original);
             QDir baseDir = fi.absoluteDir();
-            baseDir.cd(_lfolder);
+            baseDir.cd(_lfolder.absolutePath());
             QString fn = fi.completeBaseName();
             QString ext = fi.completeSuffix();
             return baseDir.absolutePath() + "/" + fn + _lsuff + "." + ext;
@@ -72,7 +73,7 @@ class Files : public QObject
         size_t _current_file;
 
         QDir        _wfolder;
-        QString     _lfolder = "labels";
+        QDir        _lfolder;
         QString     _lsuff   = "_GT";
         QStringList _files;
 };
