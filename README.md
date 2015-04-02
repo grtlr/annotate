@@ -1,7 +1,5 @@
 annotate
 ========
-[![Build Status](https://travis-ci.org/grtlr/annotate.svg?branch=master)](https://travis-ci.org/grtlr/annotate)
-
 Fast annotation of images using superpixels. The image is over segmented into superpixels using the *SEEDS* algorithm.
 
 The project is under development and expected to change frequently.
@@ -30,7 +28,7 @@ For more information you can also view the help:
 
     ./annotate --help
 
-You can use the following actions while labeling:  
+You can use the following actions while labeling:
 
 * ``<LeftMouse>`` labels the superpixel under the cursor
 * ``<RightMouse>`` labels as background
