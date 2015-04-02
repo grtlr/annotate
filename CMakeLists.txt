@@ -4,8 +4,7 @@ project(annotate)
 
 find_package(OpenCV 3.0.0 REQUIRED core imgproc ximgproc)
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Widgets REQUIRED)
+find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wpedantic -std=c++11")
