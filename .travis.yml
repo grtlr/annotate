@@ -24,7 +24,7 @@ install:
     - if [ "$CXX" == "clang++" ]; then sudo apt-get install --allow-unauthenticated -qq clang-3.4; fi
     - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.4"; fi
 
-    - sudo apt-get install qt5-default qttools5-dev-tools cmake
+    - sudo apt-get install qtbase5-dev qt5-default qttools5-dev-tools cmake
 
 before_script:
     - git clone https://github.com/Itseez/opencv.git
