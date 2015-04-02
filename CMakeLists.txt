@@ -8,10 +8,13 @@ find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(CMAKE_CXX_FLAGS "-Wall -g -std=c++11")
+set(CMAKE_CXX_FLAGS "-Wall -Wpedantic -std=c++11")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_DEBUG "-O3")
 
 include_directories(
     ${OpenCV_INCLUDE_DIRS}
+    ${Qt5Widgets_INCLUDES}
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
