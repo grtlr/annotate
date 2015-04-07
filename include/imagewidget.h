@@ -43,7 +43,7 @@ class ImageWidget : public QLabel
             this->setFocus(Qt::OtherFocusReason);
 
             Ptr<SuperpixelSEEDS> seeds;
-            int num_superpixels = 400;
+            int num_superpixels = _num_superpixels;
             int num_levels = 4;
             int prior = 2;
             int num_histogram_bins = 5;
@@ -108,6 +108,12 @@ class ImageWidget : public QLabel
         void setCurrentLabel(const Label & l)
         {
             _current_label = l;
+        }
+
+        void setNumSuperpixels(int n)
+        {
+            assert(n > 0);
+            _num_superpixels = n;
         }
 
     signals:
@@ -200,6 +206,7 @@ class ImageWidget : public QLabel
         ImageLabel * _ilabels;
 
         bool _contours_visible = true;
+        int  _num_superpixels = 400;
 
         const QColor _active_color  = QColor(255,255,255,150);
         const QColor _contour_color = QColor(255,255,255,150);

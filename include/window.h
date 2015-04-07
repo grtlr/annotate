@@ -21,10 +21,11 @@ class AnnotationWindow : public QMainWindow
     Q_OBJECT
 
     public:
-        explicit AnnotationWindow(QWidget *parent, QString file, QString target)
+        explicit AnnotationWindow(QWidget *parent, QString file, QString target, int num_superpixel = 400)
             : _current(file), _target(target)
         {
             _image_widget = new ImageWidget();
+            _image_widget->setNumSuperpixels(num_superpixel);
             this->setCentralWidget(_image_widget);
 
             QObject::connect(this, SIGNAL(currentLabelChanged(const Label &)),

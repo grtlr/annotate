@@ -24,6 +24,12 @@ The tool can be started via the command line:
 
     ./annotate labels.txt <indir> <outdir>
 
+There is an option (``-n``) that controls the number of superpixels:
+
+    ./annotate -n 600 labels.txt <indir> <outdir>
+
+If no option is set, the default number of superpixels is ``400``.
+
 For more information you can also view the help:
 
     ./annotate --help
