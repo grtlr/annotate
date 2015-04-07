@@ -30,13 +30,16 @@ int main(int argc, char **argv)
     QCommandLineParser parser;
     parser.setApplicationDescription("Annotation of images using SEEDS superpixels.");
     parser.addHelpOption();
-    parser.addPositionalArgument("labels", "File containing the labels.");
-    parser.addPositionalArgument("indir", "Folder containing the images.");
-    parser.addPositionalArgument("outdir", "Destination directory.");
+    parser.addPositionalArgument("labels", "File containing the labels");
+    parser.addPositionalArgument("indir", "Folder containing the images");
+    parser.addPositionalArgument("outdir", "Destination directory");
+
+    QCommandLineOption numberSuperpixelOption("n", "Number of superpixels", "400");
+    parser.addOption(numberSuperpixelOption);
     parser.process(app);
-    
+
     const QStringList positionalArguments = parser.positionalArguments();
-    if (positionalArguments.size() < 3) {
+    if (positionalArguments.size() != 3) {
         parser.showHelp();
     }
 
@@ -44,12 +47,12 @@ int main(int argc, char **argv)
 
     // TODO Folder exists
     fs->mkLabelDir();
-    
-    AnnotationWindow window(0, fs->getImages().at(0), "World");
-    
+
+    AnnotationWindow window(0, fs->getImages().at(0), "World", parser.value("n").toInt());
+
     QObject::connect(fs, SIGNAL(fileChanged(const cv::Mat &, const QString &, const QString &)),
             &window, SLOT(setImage(const cv::Mat &, const QString &, const QString &)));
-    
+
     QObject::connect(&window, SIGNAL(nextImageClicked()),
             fs, SLOT(nextFile()));
 
