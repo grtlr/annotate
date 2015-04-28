@@ -21,7 +21,7 @@ public:
         _input_folder = QDir( folder );
         _output_folder = QDir( target );
         QStringList filters;
-        filters << "*.png" << "*.bmp";
+        filters << "*.jpeg" << "*.jpg" << "*.png" << "*.bmp";
         _input_folder.setNameFilters( filters );
 
         for ( auto e : _input_folder.entryList() )
