@@ -69,7 +69,7 @@ private:
         return baseDir.absolutePath() + "/" + fn + _label_suffix + "." + ext;
     }
 
-    size_t _current_file;
+    int _current_file;
 
     QDir        _input_folder;
     QDir        _output_folder;
